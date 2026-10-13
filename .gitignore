@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+*.tmp
+data/*_backup_*.json
+output/pilot_*.csv
