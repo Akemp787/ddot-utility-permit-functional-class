@@ -1,195 +1,164 @@
 # Utility Permits: Road Type at Every Work Location
 
-**What this is:** a tool that tells the Public Space Division what kind of road each 2026 utility work location sits on,
-and the most significant road type for each permit, so the right time-of-day work rules can be applied.
+## Summary
 
-**Who it covers:** DC Water, PEPCO, and Washington Gas permits for *Construction Staging Area* and *Mobile Crane Work
-Zone* work, applied for or issued on or after January 1, 2026.
+The Public Space Division asked which type of road each 2026 utility permit location sits on, because a road's
+functional class determines when work is allowed to happen there. This tool answers that question for every permit
+location held by DC Water, PEPCO, and Washington Gas, and also reports the most significant road type on each permit.
 
-**The result:** one spreadsheet (CSV), with one row for every permit work location.
+The results are in one spreadsheet, `output/utility_permit_locations_functional_class.csv`, with one row for every
+permit location.
 
-Source code is also available on GitHub: https://github.com/Akemp787/ddot-utility-permit-functional-class
+The code is also on GitHub: https://github.com/Akemp787/ddot-utility-permit-functional-class
 
----
+## Key results
 
-## At a glance
+- I reviewed **4,926 permit locations** across **3,102 permit applications**: DC Water (1,887 locations), Washington
+  Gas (1,666), and PEPCO (1,373).
+- I identified the road type for **4,899 locations (99.5%)**. The other 27 are kept in the spreadsheet and marked for
+  a manual check.
+- **3,075 of the 3,102 permits** have a complete answer for their most significant road type.
+- About half of the locations are on local streets. The rest are on busier roads, mostly arterials and collectors,
+  where work hours are usually more restricted. Eight locations are on an Interstate or freeway.
+- Every utility permit in scope is a Construction Staging Area permit. None of the Mobile Crane Work Zone permits
+  belong to these three utilities.
 
-| | |
-|---|---|
-| Utility work locations reviewed | **4,926** |
-| Permit applications those locations belong to | **3,102** |
-| Locations where the road type was identified | **4,899 (99.5%)** |
-| Locations that need a manual look | **27** (flagged in the file) |
-| Applications with a complete answer | **3,075 of 3,102** |
+| Road type (most to least significant) | What it means | Locations | Permits where this is the most significant road |
+|---|---|---|---|
+| 1. Interstate | Interstate highways | 7 | 7 |
+| 2. Other freeway or expressway | Limited-access highways | 1 | 1 |
+| 3. Principal arterial | Major city corridors | 492 | 310 |
+| 4. Minor arterial | Busy connecting streets | 1,081 | 657 |
+| 5. Major collector | Streets that feed traffic to arterials | 802 | 515 |
+| 6. Minor collector | Lighter feeder streets | 107 | 64 |
+| 7. Local | Neighborhood streets | 2,409 | 1,525 |
+| Could not be determined | See "Things to keep in mind" | 27 | 23 |
+| **Total** | | **4,926** | **3,102** |
 
-| Utility | Work locations |
-|---|---|
-| DC Water | 1,887 |
-| Washington Gas | 1,666 |
-| PEPCO | 1,373 |
+## How I did it
 
-All of these utility permits are *Construction Staging Area* permits. None of the *Mobile Crane Work Zone* permits
-belong to these three utilities.
+1. **Collected the permits.** I downloaded the 2026 Construction Staging Area and Mobile Crane Work Zone permits from
+   DDOT's public permit data. A permit counts if it was applied for or issued on or after January 1, 2026.
+2. **Kept the three utilities.** I looked for DC Water, PEPCO, or Washington Gas by name in the owner, permittee, and
+   applicant fields, including the variations used in the data (for example "DCWater/CIP" and "Wash Gas & Light
+   Co."). I did not assume a permit belonged to a utility based on a contractor's name.
+3. **Found the road at each location.** I sent each location's map coordinates to DDOT's road network service, which
+   returns the nearby roads and their functional class.
+4. **Picked the right road.** I ignored alleys, which do not have a functional class, and used the closest remaining
+   road. I did not choose a bigger road simply because one was nearby, since that would make work rules stricter
+   than they need to be.
+5. **Found the most significant road on each permit** using the official ranking above, from Interstate down to
+   local streets.
+6. **Checked the results** before saving the spreadsheet (see "How I checked the results").
 
----
+## How I checked the results
 
-## Why road type matters
-
-Every road in DC has a federal **functional class**, a label for how important the road is to traffic, from
-Interstates down to local neighborhood streets. The road's class decides **what time of day work is allowed**, and
-busier roads typically have tighter work windows. Many permits cover several locations on different roads, so each
-permit needs both answers:
-
-1. **The road type at each location**
-2. **The most significant road type on the whole permit**, which points to the most restrictive rule for that permit
-
----
-
-## What the tool does, in plain terms
-
-1. **Gets the permits.** Downloads all 2026 permits of the two requested types from DDOT's public permit data.
-2. **Keeps only the three utilities.** Looks for DC Water, PEPCO, or Washington Gas by name in the owner, permittee, and
-   applicant fields. It does not guess from contractor names.
-3. **Finds the road at each location.** Sends each location's map coordinates to DDOT's road network service, which
-   returns the roads nearby.
-4. **Picks the right road.** Ignores alleys, which have no road class, and picks the **closest** remaining road. It
-   does not pick a bigger road just because one is nearby.
-5. **Finds the most significant road per permit,** using the official federal ranking below.
-6. **Checks its own work** (nothing lost, nothing duplicated, every answer traceable), then saves the spreadsheet.
-
----
-
-## Road types, from most to least significant
-
-| Rank | Road type | Plain meaning | Locations | Permits (as their most significant road) |
-|---|---|---|---|---|
-| 1 | Interstate | Highways such as I-295 and I-395 | 7 | 7 |
-| 2 | Other Freeway and Expressway | Limited-access highways | 1 | 1 |
-| 3 | Principal Arterial | Major city corridors | 492 | 310 |
-| 4 | Minor Arterial | Busy connecting streets | 1,081 | 657 |
-| 5 | Major Collector | Streets that feed traffic to arterials | 802 | 515 |
-| 6 | Minor Collector | Lighter feeder streets | 107 | 64 |
-| 7 | Local | Neighborhood streets | 2,409 | 1,525 |
-| | *Could not be determined (flagged)* | See "Things to keep in mind" | 27 | 23 |
-| | **Total** | | **4,926** | **3,102** |
-
-**Key takeaway:** about half of utility work locations are on local streets, and the other half are on busier roads
-(arterials and collectors) where work hours are typically more restricted. A small number (8 locations) are on highways.
-
----
+- **Against DDOT's own road records.** I compared every matched road with DDOT's Roadway SubBlock layer, which stores
+  the official functional class for each block. All 2,438 matched road blocks agree.
+- **Built-in checks on every run.** The tool confirms that no location was lost or counted twice, that no alley was
+  ever selected, and that each permit's most significant road matches its locations. If any check fails, the run
+  stops instead of saving a wrong answer.
+- **Tests for the key rules.** Fourteen automated tests confirm the rules behave as intended, such as skipping alleys,
+  ranking road types correctly, and not matching a utility on a contractor's name.
+- **Repeatable results.** Anyone can rebuild the same spreadsheet from the files in this folder without an internet
+  connection.
 
 ## How to read the spreadsheet
 
-The file is `output/utility_permit_locations_functional_class.csv` and opens in Excel. The most useful columns:
+The two answers are near the start of each row:
 
 | Column | What it tells you |
 |---|---|
 | `TrackingNumber` | The permit application. Rows with the same number belong to the same permit. |
 | `WorkLocationFullAddress` | Where the work is |
-| `utility_name` | DC Water, PEPCO, or Washington Gas |
-| `functional_class` | **Road type at this location** |
-| `road_route_name` | The name of the road that was matched |
-| `app_highest_functional_class` | **Most significant road type on the whole permit** |
-| `app_highest_class_status` | "complete", or a warning that some locations on the permit could not be resolved |
-| `match_status` | "matched" means the road type was found. Anything else explains why not. |
-| Columns starting with `flag_` | TRUE marks a row worth a second look |
+| `Utility` | DC Water, PEPCO, or Washington Gas |
+| `FunctionalClass` | **The road type at this location** |
+| `PermitHighestFunctionalClass` | **The most significant road type on the whole permit** |
+| `PermitHighestClassComplete` | "Yes", or "No" if part of the permit could not be checked |
+| `MatchStatus` | "Matched" means the road type was found. Any other value explains why it was not. |
+| `ReviewNote` | A short note on rows that deserve a second look |
+| `MatchedRoad`, `RoadDistanceM` | The road that was matched and its distance from the permit point, in meters |
 
-**Tip:** filter `flag_location_unresolved` to TRUE to see the 27 locations that need a manual check, or filter
-`flag_ambiguous_match` to TRUE to see the close calls between two roads.
-
----
+To see the rows that need attention, filter `MatchStatus` to anything other than "Matched", or filter `ReviewNote`
+for "Close call".
 
 ## Things to keep in mind
 
-- **27 locations could not be assigned a road type.** They are kept in the file and clearly flagged, not dropped:
-  - 14: DDOT's road data lists the nearest road as "Unclassified" (spelled "Uncassified" in the source)
-  - 9: only alleys were found nearby, and alleys have no road type
-  - 4: DDOT's service did not respond for one location point, even after repeated tries
-- **23 permits have no road type at all,** and **4 permits are only partly resolved.** For those 4, the true "most
-  significant road" could be higher than shown, and they are marked as incomplete.
-- **164 locations (3.3%) are close calls between two roads:** a second road was almost as near, within about
-  5 meters (16 feet) of the closest one. The closest road is used, and the other road is listed so staff can decide.
-- **Utilities are identified by name.** A permit filed only under a contractor's name, with no utility named, would
-  not be included.
-- **Each location is a single map point.** A staging area that stretches along several blocks is represented by
-  that one point.
-- Results reflect DDOT's data at the time the tool was run.
+- **27 locations could not be assigned a road type.** I kept them in the spreadsheet rather than dropping them:
+  - 14 are next to a road that DDOT's data lists as unclassified (spelled "Uncassified" in the source).
+  - 9 had only alleys nearby.
+  - 4 share one map point where DDOT's road service did not respond, even after several tries.
+- **4 permits are only partly answered.** For those, the most significant road type could be higher than shown, so
+  they are marked "No" in `PermitHighestClassComplete`. Another 23 permits had no location that could be checked.
+- **126 locations are close calls.** A road of a different type was almost as close, within about 5 meters
+  (16 feet). I used the closest road and named the other one in `ReviewNote` so staff can make the final call.
+- **Utilities are found by name.** A permit filed only under a contractor's name, with no utility named anywhere,
+  would not be included.
+- **Each location is a single map point.** A staging area that runs along several blocks is represented by that one
+  point.
+- The results reflect DDOT's data on October 13-14, 2026.
 
 ---
 
-## For technical reviewers: how to run it
+## Technical notes (for reviewers)
 
 ### Setup (Windows 11)
 
-1. Install Python 3.10 or later. Tested on Windows 11 with Python 3.11 (pandas 2.0) and Python 3.12 (pandas 3.0);
-   both produce an identical CSV.
-2. Open a terminal (Command Prompt, PowerShell, or Anaconda Prompt) in this folder.
-3. Install the packages:
+1. Install Python 3.10 or later. I tested on Windows 11 with Python 3.11 (pandas 2.0) and Python 3.12 (pandas 3.0),
+   and both produce the same spreadsheet.
+2. Open a terminal in this folder and install the packages:
 
    ```
    pip install -r requirements.txt
    ```
 
-All paths are built relative to the script's folder with `pathlib`, so the folder can be placed anywhere.
-
-### Run
+### Running it
 
 | Command | What it does |
 |---|---|
-| `python permit_functional_class.py --offline` | **Fastest.** Rebuilds the spreadsheet from the included data and saved road lookups. No internet needed; takes seconds. |
-| `python permit_functional_class.py` | Full run. Looks up any locations not already saved (requires internet). |
-| `python permit_functional_class.py --pilot 5` | Small test: 5 permits per utility, saved as `output/pilot_...csv`. |
-| `python permit_functional_class.py --refresh-source` | Downloads fresh permit data first (the old file is backed up). |
+| `python permit_functional_class.py --offline` | Rebuilds the spreadsheet from the included data and saved road lookups, in seconds, with no internet needed |
+| `python permit_functional_class.py` | Normal run. Looks up any locations that are not already saved. |
+| `python permit_functional_class.py --sample 5` | Quick test on 5 permits per utility |
+| `python permit_functional_class.py --refresh-source` | Downloads fresh permit data first |
+| `python -m unittest -v` | Runs the 14 tests |
+| `python check_against_subblock_layer.py` | Repeats the check against DDOT's Roadway SubBlock layer |
 
-Optional settings: `--radius` (search distance in meters, 0-200, default 50), `--tie-threshold` (meters, default 5),
-`--output` (CSV path), `--allow-unmapped-classes`. All other settings (paths, web addresses, date rule, utility
-names, road ranking, number of parallel requests) are in the CONFIGURATION section at the top of the script, with
-comments. If a run is interrupted, run the same command again and it continues where it stopped.
+Settings such as file locations, the date rule, the 50 m search distance, and the road ranking are listed at the top
+of `permit_functional_class.py` with comments. If a run is interrupted, running it again continues where it stopped.
 
 ### Folder contents
 
-| Path | Purpose |
+| File | Purpose |
 |---|---|
-| `permit_functional_class.py` | The tool. Settings are in the CONFIGURATION section at the top. |
-| `requirements.txt` | Required Python packages |
-| `data/occupancy_permits_2026_target_types.json` | Saved permit data used by default |
-| `checkpoints/lrs_lookups_*.jsonl` | Saved road lookups, so runs can resume or rebuild offline |
-| `output/utility_permit_locations_functional_class.csv` | The final spreadsheet |
+| `permit_functional_class.py` | The tool |
+| `check_against_subblock_layer.py` | Independent check against DDOT's Roadway SubBlock layer |
+| `tests/` | Automated tests for the key rules |
+| `requirements.txt` | Python packages needed |
+| `data/occupancy_permits_2026_target_types.json` | The permit data used for this run |
+| `cache/lrs_lookups.jsonl` | Saved road lookups, one per map point |
+| `output/utility_permit_locations_functional_class.csv` | The results spreadsheet |
 
-### Technical details
+### Decisions and details
 
-- **Data source:** DDOT TOPS Occupancy Permits REST layer
-  (`https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_APPS/DDOT_TOPS/MapServer/24`). The service caps records per
-  request, so the tool fetches all matching record IDs and downloads them in batches of 500, verifying each batch and
-  the total (7,194 records).
-- **Date rule:** a location is included if its `ApplicationDate` **or** `IssueDate` is on or after 2026-01-01, in US
-  Eastern time (source dates are UTC). No records had dates after 2026, and none changed between UTC and Eastern time.
-  No permit-status filter is applied.
-- **Utility matching:** `OwnerName`, `PermitteeName`, and `ApplicantCompany` are normalized (case, punctuation,
-  spacing) and matched to explicit names and observed aliases (for example DCWater/CIP, Pepco Holdings Inc,
-  Potomac Electric Power Company, Wash Gas & Light Co.). Evidence is kept in `utility_evidence`; multiple-utility
-  matches would be flagged (there were none).
-- **Road lookup:** DDOT Linear Referencing System `getPointOnSubBlock`, 50 m search radius, all route types. Alleys are
-  excluded; the nearest remaining road by absolute offset is selected. A nearest road without a class is kept and
-  flagged, never replaced by a farther road. Other roads within 5 m with a different name or class are flagged and
-  listed in `ambiguity_detail`. Identical coordinates are looked up once; lookups run 6 at a time with timeouts,
-  retries, and a resumable checkpoint.
-- **Approach choice:** of the two enrichment approaches offered, this uses approach 1 (the road network query at each
-  location's coordinates). Approach 2 (address lookup in the Master Address Repository, then the Roadway SubBlock
-  layer) would add an address-matching step and its own errors. `road_subblock_key` is kept so results can be
-  cross-checked against the Roadway SubBlock layer.
-- **Ranking:** "most significant" uses the explicit FHWA functional class order above, **not** the numeric code. In
-  this data a larger code means a *lower* class (Interstate 11, Other Freeway and Expressway 12, Principal Arterial 14,
-  Minor Arterial 16, Major Collector 17, Minor Collector 18, Local 19), so taking the largest code would be backwards.
-  The tool stops if it meets a class name it does not recognize, so nothing is ranked by guesswork. "Uncassified" is
-  treated as no class: kept as text, not ranked, and flagged (`match_status = matched_unclassified`).
-- **Permit summary:** the most significant class across a permit's resolved locations, repeated on every row of that
-  permit. If any location is unresolved, `flag_app_highest_class_incomplete` is set.
-- **Built-in checks:** no missing or duplicate record IDs; `TrackingNumber` + `LocationID` unique; every location kept
-  after each join; no alley ever selected; every class mapped to a rank; each permit's highest class equals the best
-  rank among its locations. The run stops if any check fails.
+- **Date rule.** A permit location is included if its application date or issue date is on or after January 1,
+  2026, in Eastern time. I did not filter by permit status, since the request did not ask for it.
+- **Data download.** The permit service returns at most 2,000 records per request, so the tool downloads the records
+  in batches and confirms the total matches the server's count (7,194 records).
+- **Road lookup.** The tool uses DDOT's Linear Referencing System (`getPointOnSubBlock`) with a 50 m search distance.
+  Each map point is looked up once (2,591 unique points for 4,926 locations), a few at a time to avoid overloading
+  the public service.
+- **Which enrichment approach.** The assessment offered two approaches. I used the road network service because every
+  permit location already has coordinates. Looking up addresses first (the second approach) would add another
+  matching step and more room for error. I used the second approach's Roadway SubBlock layer to check the results
+  instead.
+- **Ranking.** The ranking follows the official FHWA functional class order, 1 (Interstate) to 7 (Local), which is
+  the same coding DDOT uses in its Roadway SubBlock layer. I did not rank by the road service's numeric codes,
+  because those run backwards (Interstate is 11 and Local is 19). If the service ever returns a road type the tool
+  does not recognize, the run stops so nothing is ranked by guesswork.
+- **If this became a regular report,** I would schedule it, save the results to a database table, and review the
+  close calls and unresolved locations with permitting staff to fine-tune the 50 m and 5 m settings.
 
-### AI assistance
+### Use of AI
 
-AI tools were used to help draft the code and documentation. All runs, outputs, and validation were performed and
-reviewed by the author.
+I used AI tools to help write the code and this document. I ran the analysis, reviewed every output, and checked the
+results myself.
